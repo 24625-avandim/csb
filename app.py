@@ -1,34 +1,36 @@
-from flask import Flask, jsonify
-import random
+@app.route("/ulsan-weather", methods=["GET", "POST"])
+def ulsan_weather_skill():
+    try:
+        context = ssl._create_unverified_context()
+        url = "https://search.naver.com/search.naver?query=%EC%9A%B8%EC%82%B0%20%EB%82%A0%EC%94%A8"
 
-app = Flask(__name__)
+        webpage = urllib.request.urlopen(url, context=context)
+        soup = BeautifulSoup(webpage, "html.parser")
 
-@app.route('/text', methods=["GET", "POST"])
-def text_skill():
-    return jsonify({
+        temps = soup.find("div", class_="temperature_text")
+        summary = soup.find("p", class_="summary")
+
+        if temps and summary:
+            result_text = "울산 " + temps.get_text(strip=True) + " " + summary.get_text(strip=True)
+        else:
+            result_text = "날씨 정보를 가져오지 못했습니다."
+
+    except Exception as e:
+        result_text = f"날씨 조회 중 오류가 발생했습니다: {str(e)}"
+
+    response = {
         "version": "2.0",
         "template": {
             "outputs": [{
                 "simpleText": {
-                    "text": str(random.randint(1, 10))
+                    "text": result_text[:1000]
                 }
             }]
         }
-    })
+    }
+    return jsonify(response)
 
-@app.route('/image', methods=["GET", "POST"])
-def image_skill():
-    return jsonify({
-        "version": "2.0",
-        "template": {
-            "outputs": [{
-                "simpleImage": {
-                    "imageUrl": "https://t1.daumcdn.net/friends/prod/category/M001_friends_ryan2.jpg",
-                    "altText": "hello I'm Ryan"
-                }
-            }]
-        }
-    })
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
