@@ -128,7 +128,7 @@ def gemini_param():
     if not tt:
         return jsonify(kakao_text("파라미터 값이 없습니다."))
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("54e31730f4a82c5e923effc4b7cb155c")
     if not api_key:
         return jsonify(kakao_text("GEMINI_API_KEY 환경변수가 설정되지 않았습니다."))
 
